@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --apple-bg: #f5f5f7;
+  --apple-text: #1d1d1f;
+  --apple-subtext: #59595e;
+  --apple-blue: #0071e3;
+  --apple-border: rgba(0, 0, 0, 0.08);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #050507;
+  color: #f5f5f7;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scaled Geometric Editorial Typography */
+.apple-caption {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  color: #59595e;
+  font-weight: 400;
+}
+
+.apple-caption strong {
+  color: #111113;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+/* Clean Apple Feature Cards */
+.apple-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Hero Docked Fleet Cards */
+.dock-card {
+  background: rgba(18, 18, 22, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dock-card:hover {
+  background: rgba(28, 28, 34, 0.95);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-4px);
+}
+
+/* Siri Ambient Glow on Rectangular Kiosk */
+@property --glow-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@keyframes siri-rotate {
+  0% { --glow-angle: 0deg; }
+  100% { --glow-angle: 360deg; }
+}
+
+.siri-glow-wrapper {
+  position: relative;
+  border-radius: 28px;
+}
+
+.siri-glow-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 30px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    #0071e3 0%,
+    #8b5cf6 20%,
+    #ff2d55 40%,
+    #ff9500 60%,
+    #30b0c7 80%,
+    #0071e3 100%
+  );
+  animation: siri-rotate 4.5s linear infinite;
+  z-index: 0;
+}
+
+.siri-glow-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 36px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    #0071e3 0%,
+    #8b5cf6 20%,
+    #ff2d55 40%,
+    #ff9500 60%,
+    #30b0c7 80%,
+    #0071e3 100%
+  );
+  filter: blur(24px);
+  opacity: 0.55;
+  animation: siri-rotate 4.5s linear infinite;
+  z-index: -1;
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
