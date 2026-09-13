@@ -612,7 +612,7 @@ export default function Home() {
             &ldquo;We iterate not to fix what is flawed, but to discover what the idea was always meant to become.&rdquo;
           </p>
         </div>
-      </section>
+      </section> 
 
       {/* Transition 4 */}
       <div className="relative w-full h-32 sm:h-44 bg-gradient-to-b from-white via-[#242429] to-[#111113] z-20 pointer-events-none" />

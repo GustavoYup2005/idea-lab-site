@@ -8,7 +8,6 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 const DEFAULT_DENSITY = 1.24;
 const MM3_TO_CM3 = 1000;
-const IDEA_LAB_EMAIL = 'nauidealab@gmail.com';
 
 type RateTier = {
   materials: Record<string, number>;
@@ -19,6 +18,7 @@ type RateTier = {
 interface MachineConfig {
   name: string;
   unit: string;
+  image: string;
   printLabel: string;
   supportLabel: string;
   printDesc: string;
@@ -35,6 +35,7 @@ const COST_DATA: Record<string, MachineConfig> = {
   BAMBU_A1: {
     name: 'Bambu Lab A1',
     unit: 'g',
+    image: '/fleet-bambu-a1.jpg',
     printLabel: 'Print Material Mass',
     supportLabel: 'Support Material Mass',
     printDesc: 'Mass of the printed part (g).',
@@ -56,6 +57,7 @@ const COST_DATA: Record<string, MachineConfig> = {
   BAMBU_H2D: {
     name: 'H2D Bambu Lab',
     unit: 'g',
+    image: '/fleet-h2d.jpg',
     printLabel: 'Model Material Mass',
     supportLabel: 'Soluble Support Mass',
     printDesc: 'Mass of primary structural body (g).',
@@ -77,6 +79,7 @@ const COST_DATA: Record<string, MachineConfig> = {
   BAMBU_X1C: {
     name: 'X1C Bambu Lab',
     unit: 'g',
+    image: '/fleet-x1c.jpg',
     printLabel: 'Print Material Mass',
     supportLabel: 'Support Material Mass',
     printDesc: 'Mass of final reinforced model (g).',
@@ -98,6 +101,7 @@ const COST_DATA: Record<string, MachineConfig> = {
   MARKFORGED: {
     name: 'Markforged II',
     unit: 'cm³',
+    image: '/fleet-markforged.jpg',
     printLabel: 'Onyx Matrix Volume',
     supportLabel: 'Continuous Fiber Volume',
     printDesc: 'Volume of micro-carbon filled nylon base (cm³).',
@@ -119,6 +123,7 @@ const COST_DATA: Record<string, MachineConfig> = {
   J35: {
     name: 'Stratasys J35',
     unit: 'g',
+    image: '/fleet-j35.jpg',
     printLabel: 'Total Print Material Mass',
     supportLabel: 'Support Material Mass',
     printDesc: 'Total mass of final part (g).',
@@ -166,6 +171,7 @@ const COST_DATA: Record<string, MachineConfig> = {
   FORMLABS: {
     name: 'Formlabs',
     unit: 'g',
+    image: '/fleet-formlabs.jpg',
     printLabel: 'Print Resin Mass',
     supportLabel: 'Support Structure Mass',
     printDesc: 'Mass of cured SLA resin part (g).',
@@ -187,6 +193,7 @@ const COST_DATA: Record<string, MachineConfig> = {
   FORTUS450: {
     name: 'Fortus 450mc',
     unit: 'in³',
+    image: '/fleet-fortus.jpg',
     printLabel: 'Print Material Volume',
     supportLabel: 'Support Material Volume',
     printDesc: 'Volume of the final part (in³).',
@@ -208,6 +215,7 @@ const COST_DATA: Record<string, MachineConfig> = {
   BOSSLASER: {
     name: 'Laser cutter',
     unit: 'in²',
+    image: '/fleet-laser.jpg',
     printLabel: 'Material Sheet Area Used',
     supportLabel: 'Cut Path Length',
     printDesc: 'Approximate area of stock consumed (in²).',
@@ -253,8 +261,6 @@ function OrderCalculator() {
   const searchParams = useSearchParams();
   const initialPrinter = searchParams.get('printer') || 'BAMBU_A1';
 
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
   const [selectedMachine, setSelectedMachine] = useState(
     COST_DATA[initialPrinter] ? initialPrinter : 'BAMBU_A1'
   );
@@ -363,49 +369,6 @@ function OrderCalculator() {
   const overheadCost = includeOverhead ? activeRates.job.other : 0;
   const totalCost = printCost + supportCost + laborCost + overheadCost;
 
-  const handleSendGmail = () => {
-    if (!userName.trim() || !userEmail.trim()) {
-      setFileMessageType('error');
-      setFileMessage('Please enter your full name and student email before submitting.');
-      return;
-    }
-
-    const subject = `IDEA Lab Job Estimate - ${userName} - ${currentConfig.name}`;
-    const body = `Dear IDEA Lab,
-
-I am submitting an order request for review.
-
-*** NOTE: I will manually attach my 3D file (${fileName || 'CAD model'}) to this email draft before sending. ***
-
---- User Details ---
-Name: ${userName}
-Email: ${userEmail}
-File: ${fileName || 'Not attached via browser'}
-
---- Machine & Material ---
-Selected Fleet Tool: ${currentConfig.name}
-Selected Material: ${materialKey}
-User Tier: ${userType === 'internal' ? 'Internal NAU Rate' : 'External Rate'}
-Labor Tier: ${laborType.toUpperCase()}
-
---- Material Consumption ---
-${currentConfig.printLabel}: ${printMass} ${currentConfig.unit}
-${currentConfig.supportLabel}: ${supportMass} ${currentConfig.unit}
-
---- Cost Breakdown ---
-Model Material: $${printCost.toFixed(2)}
-Support Material: $${supportCost.toFixed(2)}
-Labor Charge: $${laborCost.toFixed(2)}
-${currentConfig.slicerName}: $${overheadCost.toFixed(2)}
-
-TOTAL ESTIMATED JOB COST: $${totalCost.toFixed(2)}
-
-Thank you!`;
-
-    const gmailUrl = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${IDEA_LAB_EMAIL}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(gmailUrl, '_blank');
-  };
-
   return (
     <div className="max-w-4xl mx-auto">
       {/* Navigation Breadcrumb */}
@@ -419,16 +382,21 @@ Thank you!`;
           </svg>
           Back to Overview
         </Link>
-        <span className="text-xs font-medium text-[#86868b]">Northern Arizona University</span>
+        <Link
+          href="/submit"
+          className="text-xs font-semibold text-[#0071e3] hover:underline"
+        >
+          Go to Official Order Form Queues &rarr;
+        </Link>
       </div>
 
       {/* Title */}
       <div className="mb-10">
         <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#111113]">
-          Job Estimate & Order Portal
+          Print Volume & Cost Estimator
         </h1>
         <p className="text-base text-[#59595e] mt-2 font-normal">
-          Select from our 8 available lab platforms and compute estimated materials, machine time, and job overhead.
+          Upload your 3D mesh to preview estimated material mass, volume dimensions, and baseline manufacturing metrics.
         </p>
       </div>
 
@@ -437,42 +405,9 @@ Thank you!`;
         {/* Main Controls (Left 7 Cols) */}
         <div className="lg:col-span-7 space-y-6">
           
-          {/* Identity Card */}
-          <div className="apple-card p-6 sm:p-7 space-y-4">
-            <h2 className="text-base font-bold text-[#111113]">Contact Information</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="user-name" className="block text-xs font-semibold text-[#59595e] mb-1.5">
-                  Full Name *
-                </label>
-                <input
-                  id="user-name"
-                  type="text"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Jane Doe"
-                  className="w-full px-3.5 py-2 text-sm bg-[#fbfbfd] border border-black/10 rounded-xl focus:outline-none focus:border-[#0071e3] transition font-medium text-[#111113]"
-                />
-              </div>
-              <div>
-                <label htmlFor="user-email" className="block text-xs font-semibold text-[#59595e] mb-1.5">
-                  Student / NAU Email *
-                </label>
-                <input
-                  id="user-email"
-                  type="email"
-                  value={userEmail}
-                  onChange={(e) => setUserEmail(e.target.value)}
-                  placeholder="jd123@nau.edu"
-                  className="w-full px-3.5 py-2 text-sm bg-[#fbfbfd] border border-black/10 rounded-xl focus:outline-none focus:border-[#0071e3] transition font-medium text-[#111113]"
-                />
-              </div>
-            </div>
-          </div>
-
           {/* Geometry Upload Card */}
           <div className="apple-card p-6 sm:p-7 space-y-3">
-            <h2 className="text-base font-bold text-[#111113]">3D CAD Geometry</h2>
+            <h2 className="text-base font-bold text-[#111113]">3D CAD Geometry Analysis</h2>
             <label
               htmlFor={fileInputId}
               className="w-full border-2 border-dashed border-black/10 hover:border-[#0071e3] bg-[#fbfbfd] rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition text-center"
@@ -515,11 +450,11 @@ Thank you!`;
 
           {/* Hardware & Material Selection */}
           <div className="apple-card p-6 sm:p-7 space-y-4">
-            <h2 className="text-base font-bold text-[#111113]">Available Fleet Tools</h2>
+            <h2 className="text-base font-bold text-[#111113]">Hardware & Material Parameters</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="machine-select" className="block text-xs font-semibold text-[#59595e] mb-1.5">Selected Machine</label>
+                <label htmlFor="machine-select" className="block text-xs font-semibold text-[#59595e] mb-1.5">Target Machine</label>
                 <select
                   id="machine-select"
                   value={selectedMachine}
@@ -572,7 +507,7 @@ Thank you!`;
               </select>
             </div>
 
-            {/* J35 Digital Hardness Section */}
+            {/* J35 Shore Hardness Section */}
             {selectedMachine === 'J35' && currentConfig.digitalMaterials && (
               <div className="p-4 bg-zinc-50 border border-black/5 rounded-2xl space-y-2">
                 <label htmlFor="digital-hardness-select" className="block text-xs font-bold text-[#111113]">
@@ -596,7 +531,7 @@ Thank you!`;
               </div>
             )}
 
-            {/* Mass Inputs */}
+            {/* Mass / Volume Inputs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
                 <label htmlFor="model-consumption" className="block text-xs font-semibold text-[#59595e] mb-1.5">
@@ -673,11 +608,31 @@ Thank you!`;
 
         </div>
 
-        {/* Cost Breakdown & Action Card (Right 5 Cols) */}
-        <div className="lg:col-span-5">
+        {/* Cost Breakdown & Disclaimer (Right 5 Cols) */}
+        <div className="lg:col-span-5 space-y-6">
+          
+          {/* Active Machine Preview Card */}
+          <div className="apple-card overflow-hidden p-0 border border-black/10 shadow-lg">
+            <div className="relative w-full h-44 bg-[#09090b]">
+              <img
+                src={currentConfig.image}
+                alt={currentConfig.name}
+                className="w-full h-full object-cover object-center filter brightness-[0.88]"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/fleet-fortus.jpg';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">
+                <span className="text-sm font-bold">{currentConfig.name}</span>
+                <span className="text-xs text-zinc-300 font-medium">Standard Lab Profile</span>
+              </div>
+            </div>
+          </div>
+
           <div className="apple-card p-6 sm:p-8 space-y-6 sticky top-8">
             <h2 className="text-lg font-bold text-[#111113] border-b border-black/5 pb-3">
-              Cost Breakdown
+              Cost Breakdown (Guide Only)
             </h2>
 
             <div className="space-y-3 text-sm">
@@ -702,7 +657,7 @@ Thank you!`;
             <div className="border-t border-black/10 pt-4 flex items-baseline justify-between">
               <div>
                 <span className="block text-xs font-semibold uppercase tracking-wider text-[#86868b]">
-                  Total Estimate
+                  Estimated Price
                 </span>
                 <span className="text-3xl font-extrabold text-[#111113]">
                   ${totalCost.toFixed(2)}
@@ -711,16 +666,24 @@ Thank you!`;
               <span className="text-xs text-[#86868b]">Excl. Taxes/Fees</span>
             </div>
 
-            <button
-              onClick={handleSendGmail}
-              className="w-full py-3.5 bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold rounded-2xl shadow-lg transition duration-200"
-            >
-              Submit to IDEA Lab (Opens Gmail)
-            </button>
+            {/* Disclaimer Box */}
+            <div className="p-4 rounded-2xl bg-amber-500/[0.08] border border-amber-500/20 text-xs text-amber-950 space-y-2">
+              <div className="flex items-center gap-2 font-bold text-amber-700">
+                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>Price Accuracy Notice</span>
+              </div>
+              <p className="leading-relaxed text-[#59595e]">
+                The prices reflected here are <strong>not final</strong> and may only be used as a general guide for print sizes and approximate material usage. If prices are doubted, please submit your file through the official Google Form or contact the IDEA Lab, and wait for staff to slice and confirm the exact verified price of your print.
+              </p>
+            </div>
 
-            <p className="text-[11px] text-[#86868b] leading-relaxed text-center">
-              Submissions open a pre-filled message in Gmail Web addressed to {IDEA_LAB_EMAIL}. Remember to attach your final CAD part file prior to dispatch.
-            </p>
+            <Link href="/submit" className="w-full block">
+              <button className="w-full py-3.5 bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold rounded-2xl shadow-lg transition duration-200">
+                Go to Official Submission Forms
+              </button>
+            </Link>
           </div>
         </div>
 
