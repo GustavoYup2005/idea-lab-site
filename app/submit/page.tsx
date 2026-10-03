@@ -25,6 +25,13 @@ const PRINTER_PORTALS: PrinterPortal[] = [
     formUrl: 'https://forms.gle/E8dmEgBSGeHjcXUh6',
   },
   {
+    name: 'H2S Bambu Lab',
+    category: 'Large Format Single Nozzle',
+    desc: 'Enclosed single-nozzle deposition for larger functional parts that need a clean, uniform engineering finish.',
+    image: '/fleet-h2s.jpg',
+    formUrl: 'https://forms.gle/yXer8oftkrZs3EeU6',
+  },
+  {
     name: 'X1C Bambu Lab',
     category: 'Carbon Composite Core',
     desc: 'Micro-lidar first layer inspection tuned for abrasive PA-CF, PETG, and rigid engineering filaments.',
@@ -60,7 +67,7 @@ const PRINTER_PORTALS: PrinterPortal[] = [
     formUrl: 'https://forms.gle/rk629fguHBq6cuTh6',
   },
   {
-    name: 'Laser Cutter',
+    name: 'Xtool P3',
     category: 'Precision Vector & Raster',
     desc: 'Micron-accurate CO2 laser vector cutting and raster etching on acrylic, hardwoods, and structural sheets.',
     image: '/fleet-laser.jpg',
@@ -89,14 +96,11 @@ export default function SubmitPortalPage() {
               href="/order"
               className="text-xs font-medium text-[#0071e3] hover:underline"
             >
-              Open Cost Calculator &rarr;
+              Calculator &rarr;
             </Link>
           </div>
 
           <div className="text-center max-w-3xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#0071e3]">
-              Submission Queues
-            </span>
             <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mt-2">
               Select Your Machine.
             </h1>
@@ -129,9 +133,6 @@ export default function SubmitPortalPage() {
             <div className="relative z-10 max-w-6xl mx-auto w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               
               <div className="max-w-2xl space-y-3">
-                <span className="inline-block px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-zinc-300">
-                  {portal.category}
-                </span>
                 <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
                   {portal.name}
                 </h2>

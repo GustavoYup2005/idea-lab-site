@@ -76,6 +76,28 @@ const COST_DATA: Record<string, MachineConfig> = {
       },
     },
   },
+  BAMBU_H2S: {
+    name: 'H2S Bambu Lab',
+    unit: 'g',
+    image: '/fleet-h2s.jpg',
+    printLabel: 'Print Material Mass',
+    supportLabel: 'Support Material Mass',
+    printDesc: 'Mass of the printed part (g).',
+    supportDesc: 'Mass of support material or interface (g).',
+    slicerName: 'Bambu Studio Overhead',
+    rates: {
+      internal: {
+        materials: { 'PLA': 0.03, 'PETG': 0.04, 'ABS': 0.04 },
+        support: 0.14,
+        job: { assisted: 3.50, unassisted: 2.20, other: 3.00 },
+      },
+      external: {
+        materials: { 'PLA': 0.05, 'PETG': 0.06, 'ABS': 0.06 },
+        support: 0.21,
+        job: { assisted: 7.00, unassisted: 4.80, other: 5.00 },
+      },
+    },
+  },
   BAMBU_X1C: {
     name: 'X1C Bambu Lab',
     unit: 'g',
@@ -213,7 +235,7 @@ const COST_DATA: Record<string, MachineConfig> = {
     },
   },
   BOSSLASER: {
-    name: 'Laser cutter',
+    name: 'Xtool P3',
     unit: 'in²',
     image: '/fleet-laser.jpg',
     printLabel: 'Material Sheet Area Used',

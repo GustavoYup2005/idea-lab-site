@@ -194,6 +194,7 @@ export default function Home() {
       desc: 'Fast and versatile. Ideal for rapid concept iterations, draft fits, and everyday classroom projects ready the same day.',
       category: 'Rapid Iteration',
       highlight: 'Same-day completion',
+      accent: '#7ED04A',
       image: '/fleet-bambu-a1.jpg',
     },
     {
@@ -202,7 +203,17 @@ export default function Home() {
       desc: 'Dual-material freedom. Prints intricate internal geometries cleanly using dedicated breakaway support plastics.',
       category: 'Multi-Material',
       highlight: 'Soluble geometries',
+      accent: '#7ED04A',
       image: '/fleet-h2d.jpg',
+    },
+    {
+      id: 'BAMBU_H2S',
+      title: 'H2S Bambu Lab.',
+      desc: 'Single-nozzle scale. Prints larger functional parts in one enclosed job with a clean, uniform outer finish.',
+      category: 'Large Format',
+      highlight: 'Expanded build volume',
+      accent: '#7ED04A',
+      image: '/fleet-h2s.jpg',
     },
     {
       id: 'BAMBU_X1C',
@@ -210,6 +221,7 @@ export default function Home() {
       desc: 'Reinforced reliability. Tuned for composite filaments that need high rigidity and a clean, uniform outer finish.',
       category: 'Carbon Composite',
       highlight: 'Rigid structure',
+      accent: '#7ED04A',
       image: '/fleet-x1c.jpg',
     },
     {
@@ -218,6 +230,7 @@ export default function Home() {
       desc: 'Unmatched strength. Lays continuous fibers inside the print to create parts strong enough to replace machined aluminum.',
       category: 'Continuous Fiber',
       highlight: 'Aluminum-strength core',
+      accent: '#CDB48A',
       image: '/fleet-markforged.jpg',
     },
     {
@@ -226,6 +239,7 @@ export default function Home() {
       desc: 'True product realism. Blends rigid components and rubber-like textures in a single job to match consumer products.',
       category: 'Multi-Texture',
       highlight: 'Full tactile realism',
+      accent: '#5AA4D6',
       image: '/fleet-j35.jpg',
     },
     {
@@ -234,6 +248,7 @@ export default function Home() {
       desc: 'Mirror-smooth surfaces. Liquid resin curing delivers crisp presentation models with virtually invisible layer lines.',
       category: 'Precision Resin',
       highlight: 'Flawless finish',
+      accent: '#E07A32',
       image: '/fleet-formlabs.jpg',
     },
     {
@@ -242,14 +257,16 @@ export default function Home() {
       desc: 'Production-grade plastics. Large-scale structural parts made with aerospace-certified engineering polymers.',
       category: 'Industrial FDM',
       highlight: 'Certified polymers',
+      accent: '#E8883A',
       image: '/fleet-fortus.jpg',
     },
     {
       id: 'BOSSLASER',
-      title: 'Laser Cutter.',
+      title: 'Xtool P3.',
       desc: 'Crisp two-dimensional cutting. Cleanly cuts, scores, and engraves acrylic, wood, and structural sheet materials in minutes.',
       category: 'Precision Vector',
       highlight: 'Accurate profiles',
+      accent: '#E0454A',
       image: '/fleet-laser.jpg',
     },
   ];
@@ -314,7 +331,7 @@ export default function Home() {
           </div>
 
           <nav className="hidden md:flex items-center gap-8 text-sm tracking-normal text-zinc-200 font-medium drop-shadow-sm">
-            <a href="#machines" className="hover:text-white transition">Machines</a>
+            <Link href="/submit" className="hover:text-white transition">Machines</Link>
             <a href="#how-to-order" className="hover:text-white transition">How to Order</a>
             <a href="#showcase" className="hover:text-white transition">Fleet Showcase</a>
           </nav>
@@ -489,9 +506,6 @@ export default function Home() {
 
         {/* Section Header */}
         <div className="relative z-10 max-w-4xl mx-auto text-center mb-12">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-300 drop-shadow">
-            Lab Fleet
-          </span>
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mt-3 leading-[1.12] drop-shadow-md">
             Ready for your project.<br />
             <span className="text-zinc-200">Whatever the requirements.</span>
@@ -512,14 +526,6 @@ export default function Home() {
                 {printers.map((printer, index) => (
                   <div key={index} className="w-full shrink-0 flex flex-col justify-between">
                     <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-bold text-[#0071e3]">
-                          {printer.category}
-                        </span>
-                        <span className="text-xs font-medium text-zinc-300">
-                          {printer.highlight}
-                        </span>
-                      </div>
                       <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
                         {printer.title}
                       </h3>
@@ -536,7 +542,7 @@ export default function Home() {
                         href={`/order?printer=${printer.id}`}
                         className="text-[#0071e3] hover:underline inline-flex items-center gap-1.5"
                       >
-                        Calculate price for this printer
+                        Calculator
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                         </svg>
@@ -608,7 +614,7 @@ export default function Home() {
             alt="IDEA Lab Northern Arizona University"
             className="w-44 h-44 sm:w-56 sm:h-56 object-contain mb-8"
           />
-          <p className="text-base sm:text-xl text-[#59595e] font-medium tracking-tight italic leading-relaxed max-w-2xl">
+          <p className="text-base sm:text-xl text-[#59595e] font-medium tracking-tight leading-relaxed max-w-2xl">
             &ldquo;We iterate not to fix what is flawed, but to discover what the idea was always meant to become.&rdquo;
           </p>
         </div>

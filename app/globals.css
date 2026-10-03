@@ -1,12 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 :root {
   --apple-bg: #f5f5f7;
   --apple-text: #1d1d1f;
   --apple-subtext: #59595e;
   --apple-blue: #0071e3;
   --apple-border: rgba(0, 0, 0, 0.08);
+}
+
+html {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+button,
+input,
+select,
+textarea,
+option {
+  font-family: inherit;
 }
 
 body {
