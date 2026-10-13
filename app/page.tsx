@@ -269,6 +269,17 @@ export default function Home() {
       accent: '#E0454A',
       image: '/fleet-laser.jpg',
     },
+    {
+      id: 'RAPTOR',
+      title: 'CR-Scan Raptor.',
+      desc: 'Hybrid blue laser and NIR. Scans a personal or class item in the lab and returns it as a 3D model.',
+      category: '3D Scanning',
+      highlight: 'Metrology-grade accuracy',
+      accent: '#00ae42',
+      image: '/fleet-raptor.jpg',
+      href: '/raptor',
+      action: 'Scan',
+    },
   ];
 
   const SLIDE_DURATION = 5000;
@@ -332,6 +343,7 @@ export default function Home() {
 
           <nav className="hidden md:flex items-center gap-8 text-sm tracking-normal text-zinc-200 font-medium drop-shadow-sm">
             <Link href="/submit" className="hover:text-white transition">Machines</Link>
+            <Link href="/tools" className="hover:text-white transition">Tools</Link>
             <a href="#how-to-order" className="hover:text-white transition">How to Order</a>
             <a href="#showcase" className="hover:text-white transition">Fleet Showcase</a>
           </nav>
@@ -526,7 +538,10 @@ export default function Home() {
                 {printers.map((printer, index) => (
                   <div key={index} className="w-full shrink-0 flex flex-col justify-between">
                     <div>
-                      <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
+                      <h3
+                        className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3"
+                        style={{ color: printer.accent }}
+                      >
                         {printer.title}
                       </h3>
                       <p className="text-base sm:text-lg text-zinc-200 font-normal leading-relaxed max-w-2xl">
@@ -539,10 +554,10 @@ export default function Home() {
                         Machine {index + 1} of {printers.length}
                       </span>
                       <Link 
-                        href={`/order?printer=${printer.id}`}
+                        href={printer.href ?? `/order?printer=${printer.id}`}
                         className="text-[#0071e3] hover:underline inline-flex items-center gap-1.5"
                       >
-                        Calculator
+                        {printer.action ?? 'Calculator'}
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                         </svg>
