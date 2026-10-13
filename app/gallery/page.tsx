@@ -1,8 +1,9 @@
-import fs from 'fs';
-import path from 'path';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-const IMAGE_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif']);
+const EXTS = ['jpg', 'jpeg', 'png', 'webp', 'jfif', 'JPG', 'JPEG', 'PNG', 'WEBP'];
 
 const SHAPES: Array<[number, number]> = [
   [4, 2],
@@ -17,21 +18,29 @@ const SHAPES: Array<[number, number]> = [
 
 type Placement = { index: number; col: number; row: number; w: number; h: number };
 
-function galleryPhotos() {
-  const dir = path.join(process.cwd(), 'public');
-  const found = new Map<number, string>();
-
-  for (const file of fs.readdirSync(dir)) {
-    const ext = path.extname(file).toLowerCase();
-    const base = path.basename(file, path.extname(file));
-    if (!IMAGE_EXT.has(ext)) continue;
-    if (!/^(?:[1-9]|1\d|2[0-2])$/.test(base)) continue;
-    found.set(Number(base), `/${file}`);
+function candidates(n: number) {
+  const stems = [String(n), String(n).padStart(2, '0')];
+  const urls: string[] = [];
+  for (const stem of stems) {
+    for (const ext of EXTS) urls.push(`/${stem}.${ext}`);
   }
+  return urls;
+}
 
-  return Array.from({ length: 22 }, (_, index) => found.get(index + 1)).filter(
-    (src): src is string => Boolean(src)
-  );
+function probe(src: string) {
+  return new Promise<boolean>((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = src;
+  });
+}
+
+async function findPhoto(n: number) {
+  for (const src of candidates(n)) {
+    if (await probe(src)) return src;
+  }
+  return null;
 }
 
 function pack(count: number, columns: number): Placement[] {
@@ -114,7 +123,17 @@ function Canvas({
 }
 
 export default function GalleryPage() {
-  const photos = galleryPhotos();
+  const [photos, setPhotos] = useState<string[]>([]);
+
+  useEffect(() => {
+    let cancel = false;
+    Promise.all(Array.from({ length: 22 }, (_, index) => findPhoto(index + 1))).then((found) => {
+      if (!cancel) setPhotos(found.filter((src): src is string => Boolean(src)));
+    });
+    return () => {
+      cancel = true;
+    };
+  }, []);
 
   return (
     <main className="relative w-full min-h-screen bg-[#050507] text-white font-sans selection:bg-[#0071e3] selection:text-white">
