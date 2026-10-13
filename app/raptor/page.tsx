@@ -67,11 +67,11 @@ export default function RaptorPage() {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-white p-6 sm:p-8 flex items-center justify-center border border-white/20">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img
                   src="/fleet-raptor.png"
                   alt="Creality CR-Scan Raptor"
-                  className="w-full h-80 sm:h-[420px] object-contain object-center transition-transform duration-700 hover:scale-[1.02]"
+                  className="w-full h-80 sm:h-[420px] object-cover object-center transition-transform duration-700 hover:scale-[1.02]"
                 />
               </div>
             </div>

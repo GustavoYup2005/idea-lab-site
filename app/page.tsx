@@ -348,12 +348,20 @@ export default function Home() {
             <a href="#showcase" className="hover:text-white transition">Fleet Showcase</a>
           </nav>
 
-          <Link
-            href="/borrow"
-            className="px-5 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-medium tracking-tight border border-white/20 backdrop-blur-md transition shadow"
-          >
-            Borrow Bambu A1
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/raptor"
+              className="px-5 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-medium tracking-tight border border-white/20 backdrop-blur-md transition shadow"
+            >
+              Borrow 3D Scanner
+            </Link>
+            <Link
+              href="/borrow"
+              className="px-5 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-medium tracking-tight border border-white/20 backdrop-blur-md transition shadow"
+            >
+              Borrow Bambu A1
+            </Link>
+          </div>
         </header>
 
         {/* Center Title */}

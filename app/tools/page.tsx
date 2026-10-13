@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
+const TOOLS_FORM_URL = 'https://forms.gle/z3M9NZdPFYeA8sxv9';
+
 const TOOLS = [
   'Soldering kit',
   'Screwdriver and Allen wrench set',
   '6 mm hex bit',
-  'Dremel kit',
   'Mlab Cusing manual',
   'Ruler',
   'Locking pliers',
@@ -12,7 +13,6 @@ const TOOLS = [
   'Clamp',
   'Small clamp',
   '25 ft tape measure',
-  'Bearing',
   'Calipers',
   'Duct tape',
   'Heat gun',
@@ -39,6 +39,14 @@ export default function ToolsPage() {
               </svg>
               IDEA Lab Overview
             </Link>
+            <a
+              href={TOOLS_FORM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-[#0071e3] hover:underline"
+            >
+              Tool form &rarr;
+            </a>
           </div>
 
           <div className="text-center max-w-3xl mx-auto">
@@ -57,6 +65,18 @@ export default function ToolsPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="relative w-full px-6 sm:px-12 pb-16">
+        <div className="max-w-6xl mx-auto bg-[#111113] border border-white/15 rounded-3xl overflow-hidden shadow-2xl p-2 sm:p-4">
+          <iframe
+            src={`${TOOLS_FORM_URL}?embedded=true`}
+            className="w-full h-[850px] rounded-2xl bg-white border-0"
+            title="Tools form"
+          >
+            Loading tools form…
+          </iframe>
+        </div>
       </section>
     </main>
   );
