@@ -1,9 +1,28 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-const EXTS = ['jpg', 'jpeg', 'png', 'webp', 'jfif', 'JPG', 'JPEG', 'PNG', 'WEBP'];
+const PHOTOS = [
+  '/1.jpeg',
+  '/2.jpeg',
+  '/3.jpeg',
+  '/4.jpeg',
+  '/5.jpeg',
+  '/6.jpeg',
+  '/7.jpeg',
+  '/8.jpeg',
+  '/9.jpeg',
+  '/10.jpeg',
+  '/11.jpeg',
+  '/12.jpeg',
+  '/13.jpeg',
+  '/14.jpeg',
+  '/15.jpeg',
+  '/17.jpeg',
+  '/18.jpeg',
+  '/19.jpeg',
+  '/20.jpeg',
+  '/21.jpeg',
+  '/22.jpeg',
+];
 
 const SHAPES: Array<[number, number]> = [
   [4, 2],
@@ -17,31 +36,6 @@ const SHAPES: Array<[number, number]> = [
 ];
 
 type Placement = { index: number; col: number; row: number; w: number; h: number };
-
-function candidates(n: number) {
-  const stems = [String(n), String(n).padStart(2, '0')];
-  const urls: string[] = [];
-  for (const stem of stems) {
-    for (const ext of EXTS) urls.push(`/${stem}.${ext}`);
-  }
-  return urls;
-}
-
-function probe(src: string) {
-  return new Promise<boolean>((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-    img.src = src;
-  });
-}
-
-async function findPhoto(n: number) {
-  for (const src of candidates(n)) {
-    if (await probe(src)) return src;
-  }
-  return null;
-}
 
 function pack(count: number, columns: number): Placement[] {
   const grid: boolean[][] = [];
@@ -82,29 +76,21 @@ function pack(count: number, columns: number): Placement[] {
   return placed;
 }
 
-function Canvas({
-  photos,
-  columns,
-  className,
-}: {
-  photos: string[];
-  columns: number;
-  className: string;
-}) {
-  const placed = pack(photos.length, columns);
+function Canvas({ columns, className }: { columns: number; className: string }) {
+  const placed = pack(PHOTOS.length, columns);
 
   return (
     <div
       className={className}
       style={{
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-        gridAutoRows: '148px',
+        gridAutoRows: `calc((100vw - 1.5rem - ${(columns - 1) * 12}px) / ${columns})`,
         gap: '12px',
       }}
     >
       {placed.map((item) => (
         <figure
-          key={photos[item.index]}
+          key={PHOTOS[item.index]}
           className="m-0 overflow-hidden rounded-2xl bg-[#121214]"
           style={{
             gridColumn: `${item.col + 1} / span ${item.w}`,
@@ -112,7 +98,7 @@ function Canvas({
           }}
         >
           <img
-            src={photos[item.index]}
+            src={PHOTOS[item.index]}
             alt={`IDEA Lab ${item.index + 1}`}
             className="h-full w-full object-cover"
           />
@@ -123,18 +109,6 @@ function Canvas({
 }
 
 export default function GalleryPage() {
-  const [photos, setPhotos] = useState<string[]>([]);
-
-  useEffect(() => {
-    let cancel = false;
-    Promise.all(Array.from({ length: 22 }, (_, index) => findPhoto(index + 1))).then((found) => {
-      if (!cancel) setPhotos(found.filter((src): src is string => Boolean(src)));
-    });
-    return () => {
-      cancel = true;
-    };
-  }, []);
-
   return (
     <main className="relative w-full min-h-screen bg-[#050507] text-white font-sans selection:bg-[#0071e3] selection:text-white">
       <section className="relative z-20 w-full px-6 sm:px-12 pt-10 pb-12 border-b border-white/10 bg-[#09090b]">
@@ -158,11 +132,9 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      <section className="relative w-full px-6 sm:px-12 py-10">
-        <div className="max-w-6xl mx-auto">
-          <Canvas photos={photos} columns={2} className="grid md:hidden" />
-          <Canvas photos={photos} columns={6} className="hidden md:grid" />
-        </div>
+      <section className="relative w-full p-3">
+        <Canvas columns={2} className="grid md:hidden" />
+        <Canvas columns={6} className="hidden md:grid" />
       </section>
     </main>
   );
