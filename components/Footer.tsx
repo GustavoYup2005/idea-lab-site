@@ -49,12 +49,12 @@ export default function Footer() {
                 Instagram
               </p>
               <a
-                href="https://instagram.com/idea_lab"
+                href="https://www.instagram.com/idea_nau/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-[#0071e3] hover:underline block"
               >
-                @idea_lab
+                @idea_nau
               </a>
             </div>
           </div>
