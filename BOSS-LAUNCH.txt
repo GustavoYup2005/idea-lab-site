@@ -1,0 +1,32 @@
+IDEA Lab website launch
+Public page: https://ce.nau.edu/me/idealab/
+
+You need Git and Node.js 20 or newer installed before you start.
+Download Git from https://git-scm.com/download/win
+Download Node.js from https://nodejs.org/  (the LTS version)
+
+If this is the first time on this computer:
+
+1. Open Command Prompt.
+2. Go to the folder where you want the site, for example:
+   cd %USERPROFILE%\Documents
+3. Download the site:
+   git clone https://github.com/GustavoYup2005/idea-lab-site.git
+4. Go into that folder:
+   cd idea-lab-site
+5. Double-click launch-nau.bat
+   Or, in Command Prompt from that same folder, run these three commands one at a time:
+   git pull
+   npm ci
+   npm run build:nau
+6. When it says the build finished, open the "out" folder inside idea-lab-site.
+7. Select everything INSIDE "out" (index.html, the folders, and the pictures).
+8. Copy those files into this folder:
+   \\arshares.ucc.nau.edu\Web\ce.nau.edu\me\idealab
+9. Do not copy the "out" folder itself.
+   index.html must sit directly inside the idealab folder.
+10. Open https://ce.nau.edu/me/idealab/ and confirm the page loads.
+
+If the site folder is already on the computer, skip the clone. Open that folder, double-click launch-nau.bat, then do steps 6 through 10.
+
+If a command fails, leave the window open and send Gustavo a screenshot.
