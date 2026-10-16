@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { asset } from '@/lib/asset';
 
 const RAPTOR_FORM_URL = 'https://forms.gle/uVpvS3AxGA9RmgyWA';
 
@@ -69,7 +70,7 @@ export default function RaptorPage() {
             <div className="lg:col-span-5">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src="/fleet-raptor.png"
+                  src={asset('/fleet-raptor.png')}
                   alt="Creality CR-Scan Raptor"
                   className="w-full h-80 sm:h-[420px] object-cover object-center transition-transform duration-700 hover:scale-[1.02]"
                 />

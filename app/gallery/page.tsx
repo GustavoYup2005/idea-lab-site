@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { asset } from '@/lib/asset';
 
 const PHOTOS = [
   '/1.jpeg',
@@ -98,7 +99,7 @@ function Canvas({ columns, className }: { columns: number; className: string }) 
           }}
         >
           <img
-            src={PHOTOS[item.index]}
+            src={asset(PHOTOS[item.index])}
             alt={`IDEA Lab ${item.index + 1}`}
             className="h-full w-full object-cover"
           />

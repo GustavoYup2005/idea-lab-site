@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { asset } from '@/lib/asset';
 
 const BAMBU_A1_BORROW_FORM_URL = 'https://forms.gle/CVyLwhGUkyHjeYTg6';
 
@@ -79,11 +80,11 @@ export default function BorrowBambuPage() {
             <div className="lg:col-span-5">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-white p-6 sm:p-8 flex items-center justify-center border border-white/20">
                 <img
-                  src="/bambu-a1-borrow.png"
+                  src={asset('/bambu-a1-borrow.png')}
                   alt="Bambu Lab A1 Fleet Unit"
                   className="w-full h-80 sm:h-[420px] object-contain object-center transition-transform duration-700 hover:scale-[1.02]"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/fleet-bambu-a1.jpg';
+                    (e.target as HTMLImageElement).src = asset('/fleet-bambu-a1.jpg');
                   }}
                 />
               </div>

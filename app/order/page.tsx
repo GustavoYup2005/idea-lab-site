@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { asset } from '@/lib/asset';
 
 const DEFAULT_DENSITY = 1.24;
 const MM3_TO_CM3 = 1000;
@@ -637,11 +638,11 @@ function OrderCalculator() {
           <div className="apple-card overflow-hidden p-0 border border-black/10 shadow-lg">
             <div className="relative w-full h-44 bg-[#09090b]">
               <img
-                src={currentConfig.image}
+                src={asset(currentConfig.image)}
                 alt={currentConfig.name}
                 className="w-full h-full object-cover object-center filter brightness-[0.88]"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/fleet-fortus.jpg';
+                  (e.target as HTMLImageElement).src = asset('/fleet-fortus.jpg');
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />

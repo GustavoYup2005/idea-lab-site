@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { asset } from '@/lib/asset';
 
 interface PrinterPortal {
   name: string;
@@ -121,7 +122,7 @@ export default function SubmitPortalPage() {
             {/* Background Layer with Dark Vignette */}
             <div className="absolute inset-0 z-0 overflow-hidden">
               <img
-                src={portal.image}
+                src={asset(portal.image)}
                 alt={portal.name}
                 className="w-full h-full object-cover object-center filter brightness-[0.45] contrast-[1.05] transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
               />

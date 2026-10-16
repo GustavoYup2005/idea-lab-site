@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:nau": "node scripts/build-nau.mjs",
     "start": "next start",
     "lint": "eslint"
   },

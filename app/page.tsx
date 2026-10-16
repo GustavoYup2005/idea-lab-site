@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import SubmissionGuideModal from '@/components/SubmissionGuideModal';
+import { asset } from '@/lib/asset';
 
 const Scene = dynamic(() => import('@/components/Scene'), { ssr: false });
 
@@ -324,7 +325,7 @@ export default function Home() {
         
         <div className="absolute inset-x-0 top-0 h-[88vh] min-h-[620px] z-0 overflow-hidden pointer-events-none">
           <img
-            src="/sanghi-college.jpg"
+            src={asset('/sanghi-college.jpg')}
             alt="Northern Arizona University Engineering"
             className="w-full h-full object-cover object-top filter brightness-[0.78] contrast-[1.04]"
           />
@@ -518,7 +519,7 @@ export default function Home() {
               }`}
             >
               <img
-                src={printer.image}
+                src={asset(printer.image)}
                 alt={printer.title}
                 className="w-full h-full object-cover object-center filter brightness-[0.78] contrast-[1.02]"
               />
@@ -639,7 +640,7 @@ export default function Home() {
       <section className="relative w-full bg-white text-[#1d1d1f] pt-20 pb-24 px-6 sm:px-12 z-20">
         <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
           <img
-            src="/idea-lab-logo.png"
+            src={asset('/idea-lab-logo.png')}
             alt="IDEA Lab Northern Arizona University"
             className="w-44 h-44 sm:w-56 sm:h-56 object-contain mb-8"
           />
