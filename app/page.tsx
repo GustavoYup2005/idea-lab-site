@@ -192,9 +192,11 @@ export default function Home() {
     {
       id: 'BAMBU_A1',
       title: 'Bambu Lab A1.',
-      desc: 'Fast and versatile. Ideal for rapid concept iterations, draft fits, and everyday classroom projects ready the same day.',
-      category: 'Rapid Iteration',
-      highlight: 'Same-day completion',
+      desc: 'Students can check out this printer to take home. The A1 is available exclusively for equipment loans.',
+      href: '/borrow',
+      action: 'Request checkout',
+      category: 'Student checkout',
+      highlight: 'Take-home printer',
       accent: '#7ED04A',
       image: '/fleet-bambu-a1.jpg',
     },
@@ -336,7 +338,6 @@ export default function Home() {
         {/* Top Header */}
         <header className="relative z-10 w-full flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-bold tracking-tight text-white drop-shadow-md">IDEA Lab</span>
             <span className="hidden sm:inline-block text-xs font-medium px-3.5 py-1 rounded-full bg-black/40 backdrop-blur-md text-zinc-200 border border-white/15">
               Northern Arizona University
             </span>
@@ -379,7 +380,9 @@ export default function Home() {
           <p className="mt-6 text-base sm:text-xl text-zinc-100 font-normal max-w-2xl mx-auto leading-relaxed drop-shadow-md">
             Northern Arizona University &bull; Fast, accessible prototyping for your classes, research, and student competition teams.
           </p>
-          <div className="mt-8 flex items-center justify-center">
+          <div className="mt-8 flex flex-wrap gap-3 items-center justify-center">
+            <Link href="/orders" className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-black hover:bg-zinc-200">Track an order</Link>
+            <Link href="/lab-admin#manual-add" className="rounded-full bg-black/60 px-7 py-3 text-sm font-semibold text-white border border-white/30">Staff manual entry</Link>
             <button
               onClick={() => setIsGuideOpen(true)}
               className="px-7 py-3 rounded-full bg-black/40 hover:bg-black/60 text-white text-sm font-semibold tracking-tight transition border border-white/20 backdrop-blur-md shadow cursor-pointer"

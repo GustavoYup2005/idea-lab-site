@@ -5,6 +5,9 @@ import { useSearchParams } from 'next/navigation';
 import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import TestSubmission from '@/components/TestSubmission';
+import { useLabTest } from '@/lib/lab-test';
+import { readBambuPlate } from '@/lib/bambu-plate';
 import { asset } from '@/lib/asset';
 
 const DEFAULT_DENSITY = 1.24;
@@ -33,28 +36,6 @@ interface MachineConfig {
 }
 
 const COST_DATA: Record<string, MachineConfig> = {
-  BAMBU_A1: {
-    name: 'Bambu Lab A1',
-    unit: 'g',
-    image: '/fleet-bambu-a1.jpg',
-    printLabel: 'Print Material Mass',
-    supportLabel: 'Support Material Mass',
-    printDesc: 'Mass of the printed part (g).',
-    supportDesc: 'Mass of support material or interface (g).',
-    slicerName: 'Bambu Studio Overhead',
-    rates: {
-      internal: {
-        materials: { 'PLA Basic / Matte': 0.03, 'PETG': 0.04, 'TPU 95A': 0.06 },
-        support: 0.03,
-        job: { assisted: 3.17, unassisted: 2.00, other: 2.50 },
-      },
-      external: {
-        materials: { 'PLA Basic / Matte': 0.05, 'PETG': 0.06, 'TPU 95A': 0.09 },
-        support: 0.05,
-        job: { assisted: 6.89, unassisted: 4.59, other: 4.00 },
-      },
-    },
-  },
   BAMBU_H2D: {
     name: 'H2D Bambu Lab',
     unit: 'g',
@@ -280,12 +261,14 @@ function calculateGeometryVolume(geometry: THREE.BufferGeometry): number {
 }
 
 function OrderCalculator() {
+  const demo = useLabTest();
+  const uploadVersion = useRef(0);
   const fileInputId = useId();
   const searchParams = useSearchParams();
-  const initialPrinter = searchParams.get('printer') || 'BAMBU_A1';
+  const initialPrinter = searchParams.get('printer') || 'BAMBU_X1C';
 
   const [selectedMachine, setSelectedMachine] = useState(
-    COST_DATA[initialPrinter] ? initialPrinter : 'BAMBU_A1'
+    COST_DATA[initialPrinter] ? initialPrinter : 'BAMBU_X1C'
   );
   const [userType, setUserType] = useState<'internal' | 'external'>('internal');
   const [materialKey, setMaterialKey] = useState('');
@@ -310,16 +293,45 @@ function OrderCalculator() {
     }
   }, [selectedMachine, userType, activeRates.materials, materialKey]);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const analyzeFile = async (file: File) => {
 
+    const version = ++uploadVersion.current;
+    setPrintMass(0);
+    setSupportMass(0);
     const lowerName = file.name.toLowerCase();
     setFileName(file.name);
 
-    if (lowerName.endsWith('.sldprt')) {
+    if (lowerName.endsWith('.3mf') || (lowerName.endsWith('.stl') && demo && selectedMachine === 'BAMBU_X1C' && materialKey === 'PLA')) {
+      setFileMessageType('neutral');
+      setFileMessage('Reading the sliced plate…');
+      try {
+        let grams: number;
+        if (lowerName.endsWith('.3mf')) {
+          if (!selectedMachine.startsWith('BAMBU_')) throw Error('Choose the Bambu printer used for this slice.');
+          const plate = await readBambuPlate(file);
+          if (plate.multiple) throw Error(plate.grams + ' g total across multiple filaments. Enter each material quantity manually for pricing.');
+          grams = plate.grams;
+        } else {
+          setFileMessage('Slicing in Bambu Studio on this PC…');
+          const response = await fetch('/lab-test/slice', { method: 'POST', body: file });
+          const data = await response.json();
+          if (data.error || !(data.grams > 0)) throw Error(data.error || 'Slicing failed.');
+          grams = data.grams;
+        }
+        if (version !== uploadVersion.current) return;
+        setPrintMass(grams);
+        setFileMessageType('success');
+        setFileMessage(grams + ' g of filament for the sliced plate, including same-material supports. Charged at the selected material rate.');
+      } catch (error) {
+        if (version !== uploadVersion.current) return;
+        setFileMessageType('error');
+        setFileMessage((error as Error).message);
+      }
+      return;
+    }
+    if (/\.(step|stp|sldprt)$/.test(lowerName)) {
       setFileMessageType('warning');
-      setFileMessage('Cannot directly calculate native .sldprt files. In SolidWorks, click File -> Save As, and export as .STL or .OBJ.');
+      setFileMessage('Open your CAD file in a compatible slicer and export a sliced Bambu plate, or export a mesh in millimetres for a rough estimate.');
       return;
     }
 
@@ -328,6 +340,7 @@ function OrderCalculator() {
 
     const reader = new FileReader();
     reader.onload = (event) => {
+      if (version !== uploadVersion.current) return;
       try {
         let totalVolumeMm3 = 0;
         const result = event.target?.result;
@@ -357,8 +370,10 @@ function OrderCalculator() {
         let calculatedValue = 0;
         if (currentConfig.unit === 'in³') {
           calculatedValue = parseFloat((volumeCm3 * 0.0610237).toFixed(2));
+        } else if (currentConfig.unit === 'cm³') {
+          calculatedValue = volumeCm3;
         } else if (currentConfig.unit === 'in²') {
-          calculatedValue = parseFloat((volumeCm3 * 0.15).toFixed(2));
+          throw Error('Enter sheet area in square inches manually.');
         } else {
           calculatedValue = parseFloat((volumeCm3 * DEFAULT_DENSITY).toFixed(2));
         }
@@ -367,7 +382,7 @@ function OrderCalculator() {
           setPrintMass(calculatedValue);
           setSupportMass(0);
           setFileMessageType('success');
-          setFileMessage(`Estimated model requirement: ~${calculatedValue} ${currentConfig.unit}. Slicer support will be finalized by lab staff.`);
+          setFileMessage(`Solid-model estimate (millimetre mesh): ~${calculatedValue} ${currentConfig.unit}. Infill, walls and supports change the sliced result.`);
         } else {
           throw new Error('Geometry volume is zero or invalid.');
         }
@@ -378,12 +393,15 @@ function OrderCalculator() {
       }
     };
 
+    reader.onerror = () => { if (version === uploadVersion.current) { setFileMessageType('error'); setFileMessage('Could not read this file.'); } };
     if (lowerName.endsWith('.stl')) {
       reader.readAsArrayBuffer(file);
     } else {
       reader.readAsText(file);
     }
   };
+
+  if (initialPrinter === 'BAMBU_A1') return <section className="max-w-xl mx-auto space-y-5"><h1 className="text-4xl font-bold">Bambu Lab A1 checkout</h1><p>The A1 is exclusively for students to check out and take home.</p><Link href="/borrow" className="underline">Request an A1 checkout</Link></section>;
 
   const printUnitRate = activeRates.materials[materialKey] || 0;
   const printCost = printMass * printUnitRate;
@@ -409,17 +427,17 @@ function OrderCalculator() {
           href="/submit"
           className="text-xs font-semibold text-[#0071e3] hover:underline"
         >
-          Go to Official Order Form Queues &rarr;
+          Submit a job
         </Link>
       </div>
 
       {/* Title */}
       <div className="mb-10">
         <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#111113]">
-          Print Volume & Cost Estimator
+          Print calculator
         </h1>
         <p className="text-base text-[#59595e] mt-2 font-normal">
-          Upload your 3D mesh to preview estimated material mass, volume dimensions, and baseline manufacturing metrics.
+          Import a sliced Bambu plate for filament usage, or estimate material from a mesh.
         </p>
       </div>
 
@@ -430,7 +448,7 @@ function OrderCalculator() {
           
           {/* Geometry Upload Card */}
           <div className="apple-card p-6 sm:p-7 space-y-3">
-            <h2 className="text-base font-bold text-[#111113]">3D CAD Geometry Analysis</h2>
+            <h2 className="text-base font-bold text-[#111113]">Print file</h2>
             <label
               htmlFor={fileInputId}
               className="w-full border-2 border-dashed border-black/10 hover:border-[#0071e3] bg-[#fbfbfd] rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition text-center"
@@ -439,23 +457,33 @@ function OrderCalculator() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
               <span className="text-sm font-semibold text-[#111113]">
-                {fileName || 'Drop your .STL or .OBJ file here'}
+                {fileName || 'Choose a print file'}
               </span>
               <span className="text-xs text-[#86868b] mt-1">
-                Automatic volume & mass calculation enabled
+                {demo && selectedMachine === 'BAMBU_X1C' && materialKey === 'PLA' ? 'X1C · PLA Basic · 0.4 mm nozzle · 0.20 mm Standard. Choose an STL to slice locally.' : 'Bambu sliced plate (.gcode.3mf) or STL / OBJ mesh in millimetres'}
               </span>
             </label>
             <input
               id={fileInputId}
               ref={fileInputRef}
               type="file"
-              accept=".stl,.obj,.sldprt"
-              onChange={handleFileUpload}
-              className="hidden"
+              accept=".3mf,.stl,.obj,.step,.stp,.sldprt"
+              onChange={e => { const file = e.target.files?.[0]; e.target.value = ''; if (file) void analyzeFile(file); }}
+              className="sr-only"
             />
 
+            {demo && selectedMachine === 'BAMBU_X1C' && materialKey === 'PLA' && (
+              <button className="text-sm text-blue-700 underline" onClick={async () => {
+                try {
+                  const response = await fetch(asset('/test-cube.stl'));
+                  if (!response.ok) throw Error();
+                  await analyzeFile(new File([await response.blob()], '20 mm test cube.stl'));
+                } catch { setFileMessageType('error'); setFileMessage('Could not open the test cube.'); }
+              }}>Try a 20 mm cube</button>
+            )}
             {fileMessage && (
               <p
+                role="status"
                 className={`text-xs font-medium mt-2 leading-relaxed ${
                   fileMessageType === 'success'
                     ? 'text-emerald-600'
@@ -473,7 +501,7 @@ function OrderCalculator() {
 
           {/* Hardware & Material Selection */}
           <div className="apple-card p-6 sm:p-7 space-y-4">
-            <h2 className="text-base font-bold text-[#111113]">Hardware & Material Parameters</h2>
+            <h2 className="text-base font-bold text-[#111113]">Printer and material</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -482,6 +510,7 @@ function OrderCalculator() {
                   id="machine-select"
                   value={selectedMachine}
                   onChange={(e) => {
+                    uploadVersion.current++;
                     setSelectedMachine(e.target.value);
                     setPrintMass(0);
                     setSupportMass(0);
@@ -519,7 +548,7 @@ function OrderCalculator() {
               <select
                 id="material-select"
                 value={materialKey}
-                onChange={(e) => setMaterialKey(e.target.value)}
+                onChange={(e) => { uploadVersion.current++; setMaterialKey(e.target.value); setFileName(''); setFileMessage(''); setPrintMass(0); setSupportMass(0); }}
                 className="w-full px-3.5 py-2 text-sm bg-[#fbfbfd] border border-black/10 rounded-xl focus:outline-none focus:border-[#0071e3] transition font-medium text-[#111113]"
               >
                 {Object.entries(activeRates.materials).map(([mat, rate]) => (
@@ -655,7 +684,7 @@ function OrderCalculator() {
 
           <div className="apple-card p-6 sm:p-8 space-y-6 sticky top-8">
             <h2 className="text-lg font-bold text-[#111113] border-b border-black/5 pb-3">
-              Cost Breakdown (Guide Only)
+              Estimated price
             </h2>
 
             <div className="space-y-3 text-sm">
@@ -695,17 +724,16 @@ function OrderCalculator() {
                 <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                <span>Price Accuracy Notice</span>
+                <span>About this quote</span>
               </div>
               <p className="leading-relaxed text-[#59595e]">
-                The prices reflected here are <strong>not final</strong> and may only be used as a general guide for print sizes and approximate material usage. If prices are doubted, please submit your file through the official Google Form or contact the IDEA Lab, and wait for staff to slice and confirm the exact verified price of your print.
+                This estimate uses the rates shown above. Lab staff confirm the material, print settings and final price before printing.
               </p>
             </div>
 
-            <Link href="/submit" className="w-full block">
-              <button className="w-full py-3.5 bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold rounded-2xl shadow-lg transition duration-200">
-                Go to Official Submission Forms
-              </button>
+            {demo && printMass > 0 && <TestSubmission key={[fileName, totalCost, selectedMachine].join("|")} cost={totalCost} printer={currentConfig.name} />}
+            <Link href="/submit" className="text-center block w-full py-3.5 bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold rounded-2xl shadow-lg transition duration-200">
+                Choose a submission form
             </Link>
           </div>
         </div>

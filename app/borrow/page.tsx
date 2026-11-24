@@ -52,7 +52,7 @@ export default function BorrowBambuPage() {
                 </span>
               </h1>
               <p className="text-base sm:text-lg text-zinc-300 font-normal leading-relaxed max-w-xl">
-                Take high-speed extrusion directly to your student workshop, team space, or desk. Complete the checkout intake form to stage your unit for pickup at Building 69.
+                The Bambu Lab A1 is exclusively for students to check out and take home. Complete the checkout intake form to stage your unit for pickup at Building 69.
               </p>
               
               <div className="flex flex-wrap items-center gap-4 pt-2">

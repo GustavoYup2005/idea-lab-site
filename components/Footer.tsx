@@ -61,7 +61,9 @@ export default function Footer() {
 
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-4">
             <p>&copy; {new Date().getFullYear()} Northern Arizona University IDEA Lab. All rights reserved.</p>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap justify-center items-center gap-6">
+              <Link href="/orders">Track an order</Link>
+              <Link href="/lab-admin">Staff queue</Link>
               <button
                 onClick={() => setIsTermsOpen(true)}
                 className="text-zinc-400 hover:text-white underline underline-offset-4 transition"
